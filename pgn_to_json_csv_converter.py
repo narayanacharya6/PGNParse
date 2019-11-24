@@ -1,13 +1,12 @@
 import os
 import sys
-import json
-import csv
-import chess.pgn
-import re
-import sys
 import time
 import argparse
 
+# External Project Imports
+import chess.pgn
+
+# Project Import
 import arg_checker
 import features
 import dumper
