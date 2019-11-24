@@ -1,8 +1,10 @@
 import re
 import chess.pgn
+import chess.engine
 
 MOVES = "Moves"
 EVALS = "Evals"
+ENGINE_EVALS = "EngineEvals"
 COMMENTS = "Comments"
 WHITE_CENTER = "WhiteCenter"
 BLACK_CENTER = "BlackCenter"
@@ -51,3 +53,9 @@ def get_diagonal_control(node):
         black_diagonal += len(board.attackers(chess.BLACK, diag_square))
 
     return white_diagonal, black_diagonal
+
+
+def get_engine_eval(engine, time, node):
+    board = node.board()
+    info = engine.analyse(board, chess.engine.Limit(time=time))
+    return str(info.score)

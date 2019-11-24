@@ -5,6 +5,7 @@ import argparse
 
 # External Project Imports
 import chess.pgn
+import chess.engine
 
 # Project Import
 import arg_checker
@@ -20,6 +21,9 @@ parser.add_argument('-dc', '--dump-csv', action='store_true', default=False)
 parser.add_argument('-o', '--output-dir', type=arg_checker.dir_path, default='./output/')
 parser.add_argument('--moves', action='store_true', default=True)
 parser.add_argument('--evals', action='store_true', default=False)
+parser.add_argument('--engine-evals', action='store_true', default=False)
+parser.add_argument('--engine-path', default='./engine/stockfish_10_x64.exe')
+parser.add_argument('--engine-eval-time', default=0.1)
 parser.add_argument('--comments', action='store_true', default=True)
 parser.add_argument('--center-control', action='store_true', default=False)
 parser.add_argument('--diagonal-control', action='store_true', default=False)
@@ -35,9 +39,10 @@ print('Dumping to JSON and CSV where?:', args.output_dir)
 print('------------------------------')
 print('Getting moves?:', args.moves)
 print('Getting evals?:', args.evals)
+print('Getting engine evals?:', args.engine_evals)
 print('Getting comments?:', args.comments)
 print('Getting center control?:', args.center_control)
-print('Getting diagonal_control?:', args.diagonal_control)
+print('Getting diagonal control?:', args.diagonal_control)
 print()
 
 games = []
@@ -58,6 +63,8 @@ for file_name in args.files_list:
     games_from_file = []
     batch_start_time = time.time()
 
+    stockfish_engine = chess.engine.SimpleEngine.popen_uci(args.engine_path)
+    engine_eval_time = float(args.engine_eval_time)
     node = chess.pgn.read_game(pgn)
     while node is not None and len(games_from_file) < games_to_get_per_file:
         try:
@@ -75,6 +82,10 @@ for file_name in args.files_list:
             # Will save comp time as regex matching no longer required!
             if args.evals:
                 data[features.EVALS] = []
+
+            # Stockfish engine analysis
+            if args.engine_evals:
+                data[features.ENGINE_EVALS] = []
 
             if args.comments:
                 data[features.COMMENTS] = []
@@ -100,6 +111,11 @@ for file_name in args.files_list:
                 # Evals
                 if args.evals:
                     data[features.EVALS].append(features.get_move_acpl(node))
+
+                # Engine Evals
+                if args.engine_evals:
+                    data[features.ENGINE_EVALS].append(features.get_engine_eval(stockfish_engine, engine_eval_time,
+                                                                                node))
 
                 # Comments
                 if args.comments:
@@ -140,6 +156,12 @@ for file_name in args.files_list:
         pgn.close()
     except Exception as inst:
         print('Something went wrong while closing pgn file!')
+        print(inst)
+
+    try:
+        stockfish_engine.quit()
+    except Exception as inst:
+        print('Something went wrong while shutting down engine!')
         print(inst)
 
 print('Failed to process games: {}'.format(failed_games))
