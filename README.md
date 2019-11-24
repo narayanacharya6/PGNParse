@@ -28,6 +28,7 @@ python pgn_to_json_csv_converter.py --files-list sample.pgn -n 10 -b 2
 ```
 
 TODOs:
+- Add metrics.txt to output dump folder for better insight into what the dump holds.
 - Add functionality to get and unzip data within the script itself if in lichess mode.
 - Improve parsing performance if possible.
 - Add more features for parsing. 
