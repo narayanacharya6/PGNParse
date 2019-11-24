@@ -17,8 +17,17 @@ pip install -r requirements.txt
 
 - You will need a PGN file at the root of the directory for parsing.
 
+- Check usage using:
+```
+python pgn_to_json_csv_converter.py --help
+```
+
+- Sample Usage:
+```
+python pgn_to_json_csv_converter.py --files-list sample.pgn -n 10 -b 2
+```
+
 TODOs:
-- Improve how we parse arguments to parser.
 - Add functionality to get and unzip data within the script itself if in lichess mode.
 - Improve parsing performance if possible.
 - Add more features for parsing. 
