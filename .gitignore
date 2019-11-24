@@ -1,2 +1,4 @@
 .idea/
 *.pgn
+output/
+__pycache__/
