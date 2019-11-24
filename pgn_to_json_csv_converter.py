@@ -9,6 +9,8 @@ import time
 import argparse
 
 import arg_checker
+import features
+import dumper
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--files-list', nargs='+', default=[])
@@ -18,10 +20,10 @@ parser.add_argument('-dj', '--dump-json', action='store_true', default=False)
 parser.add_argument('-dc', '--dump-csv', action='store_true', default=False)
 parser.add_argument('-o', '--output-dir', type=arg_checker.dir_path, default='./output/')
 parser.add_argument('--moves', action='store_true', default=True)
-parser.add_argument('--evals', action='store_false', default=False)
+parser.add_argument('--evals', action='store_true', default=False)
 parser.add_argument('--comments', action='store_true', default=True)
-parser.add_argument('--center-control', action='store_false', default=False)
-parser.add_argument('--diagonal-control', action='store_false', default=False)
+parser.add_argument('--center-control', action='store_true', default=False)
+parser.add_argument('--diagonal-control', action='store_true', default=False)
 args = parser.parse_args()
 
 print('------------------------------')
@@ -67,24 +69,26 @@ for file_name in args.files_list:
                 data[header_key] = node.headers[header_key]
 
             if args.moves:
-                data["Moves"] = []
+                data[features.MOVES] = []
 
             # Eval not available in many-a-games (almost 85%)!
             # Add only if really required.
             # Will save comp time as regex matching no longer required!
             if args.evals:
-                data["Evals"] = []
+                data[features.EVALS] = []
 
             if args.comments:
-                data["Comments"] = []
+                data[features.COMMENTS] = []
 
+            # Somewhat computationally heavy!
             if args.center_control:
-                data["WhiteCenter"] = []
-                data["BlackCenter"] = []
+                data[features.WHITE_CENTER] = []
+                data[features.BLACK_CENTER] = []
 
+            # Really computationally heavy!
             if args.diagonal_control:
-                data["WhiteDiag"] = []
-                data["BlackDiag"] = []
+                data[features.WHITE_DIAGONAL] = []
+                data[features.BLACK_DIAGONAL] = []
 
             while node.variations:
                 next_node = node.variation(0)
@@ -92,43 +96,27 @@ for file_name in args.files_list:
 
                 # Moves
                 if args.moves:
-                    data["Moves"].append(node.board().san(next_node.move))
+                    data[features.MOVES].append(features.get_move(node))
 
                 # Evals
                 if args.evals:
-                    acpl_match = re.match("\[\%eval (.*?)\]", next_node.comment)
-                    data["Evals"].append(acpl_match.group(1) if acpl_match is not None else "X")
+                    data[features.EVALS].append(features.get_move_acpl(node))
 
                 # Comments
                 if args.comments:
-                    data["Comments"].append(-1 if len(nags) == 0 else list(nags)[0])
+                    data[features.COMMENTS].append(features.get_move_comment(node))
 
                 # Center control
                 if args.center_control:
-                    center_squares = [chess.E4, chess.E5, chess.D4, chess.D5]
-                    white_center = 0
-                    black_center = 0
-                    for center_square in center_squares:
-                        white_center += len(node.board().attackers(chess.WHITE, center_square))
-                        black_center += len(node.board().attackers(chess.BLACK, center_square))
-
-                    data["WhiteCenter"].append(white_center)
-                    data["BlackCenter"].append(black_center)
+                    white_center, black_center = features.get_center_control(node)
+                    data[features.WHITE_CENTER].append(white_center)
+                    data[features.BLACK_CENTER].append(black_center)
 
                 # Diagonal Control
                 if args.diagonal_control:
-                    main_diagonal = [chess.A8, chess.B7, chess.C6, chess.D5, chess.E4, chess.F3, chess.G2, chess.H1]
-                    oppo_diagonal = [chess.A1, chess.B2, chess.C3, chess.D4, chess.E5, chess.F6, chess.G7, chess.H8]
-                    diagonal_squares = main_diagonal + oppo_diagonal
-                    # print(diagonal_squares)
-                    white_diagonal = 0
-                    black_diagonal = 0
-                    for diag_square in diagonal_squares:
-                        white_diagonal += len(node.board().attackers(chess.WHITE, diag_square))
-                        black_diagonal += len(node.board().attackers(chess.BLACK, diag_square))
-
-                    data["WhiteDiag"].append(white_diagonal)
-                    data["BlackDiag"].append(black_diagonal)
+                    white_diagonal, black_diagonal = features.get_diagonal_control(node)
+                    data[features.WHITE_DIAGONAL].append(white_diagonal)
+                    data[features.BLACK_DIAGONAL].append(black_diagonal)
 
                 node = next_node
 
@@ -166,35 +154,12 @@ if args.dump_json or args.dump_csv:
     file_name = 'data'
 
     if args.dump_json:
-        try:
-            json_file_path = os.path.join(output_dir, file_name + '.json')
-            os.makedirs(os.path.dirname(json_file_path), exist_ok=True)
-            json_file = open(json_file_path, 'w')
-
-            json.dump(games, json_file)
-            json_file.close()
-            print('JSON dump complete:!', json_file.name)
-        except Exception as inst:
-            print('Something went wrong with JSON dump!', inst)
+        dumper.dump_json(output_dir, file_name, games)
     else:
         print('Not dumping games to JSON')
 
     if args.dump_csv:
-        try:
-            csv_file_path = os.path.join(output_dir, file_name + '.csv')
-            os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
-            csv_file = open(csv_file_path, 'w')
-
-            keys = games[0].keys()
-            # Extrasaction ignore keys not in dict
-            # Think again if we need this, example missing key is 'BlackTitle "LM"'
-            dict_writer = csv.DictWriter(csv_file, keys, extrasaction='ignore')
-            dict_writer.writeheader()
-            dict_writer.writerows(games)
-            csv_file.close()
-            print('CSV dump complete:!', csv_file.name)
-        except Exception as inst:
-            print('Something went wrong with CSV dump!', inst)
+        dumper.dump_csv(output_dir, file_name, games)
     else:
         print('Not dumping games to CSV')
 
