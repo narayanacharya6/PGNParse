@@ -23,6 +23,7 @@ parser.add_argument('--moves', action='store_true', default=True)
 parser.add_argument('--evals', action='store_true', default=False)
 parser.add_argument('--engine-evals', action='store_true', default=False)
 parser.add_argument('--engine-path', default='./engine/stockfish_10_x64.exe')
+parser.add_argument('--engine-eval-depth', default=20)
 parser.add_argument('--engine-eval-time', default=0.1)
 parser.add_argument('--comments', action='store_true', default=True)
 parser.add_argument('--center-control', action='store_true', default=False)
@@ -64,6 +65,7 @@ for file_name in args.files_list:
     batch_start_time = time.time()
 
     stockfish_engine = chess.engine.SimpleEngine.popen_uci(args.engine_path)
+    engine_eval_depth = int(args.engine_eval_depth)
     engine_eval_time = float(args.engine_eval_time)
     node = chess.pgn.read_game(pgn)
     while node is not None and len(games_from_file) < games_to_get_per_file:
@@ -114,8 +116,8 @@ for file_name in args.files_list:
 
                 # Engine Evals
                 if args.engine_evals:
-                    data[features.ENGINE_EVALS].append(features.get_engine_eval(stockfish_engine, engine_eval_time,
-                                                                                node))
+                    data[features.ENGINE_EVALS].append(features.get_engine_eval(stockfish_engine, engine_eval_depth,
+                                                                                engine_eval_time, node))
 
                 # Comments
                 if args.comments:
