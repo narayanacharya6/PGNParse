@@ -1,6 +1,7 @@
 import re
 import chess.pgn
 import chess.engine
+import chess.polyglot as polyglot
 
 MOVES = "Moves"
 EVALS = "Evals"
@@ -10,6 +11,7 @@ WHITE_CENTER = "WhiteCenter"
 BLACK_CENTER = "BlackCenter"
 WHITE_DIAGONAL = "WhiteDiag"
 BLACK_DIAGONAL = "BlackDiag"
+ZOBRIST_HASH = "ZobristHash"
 
 
 def get_move(node):
@@ -45,6 +47,10 @@ def get_engine_eval(engine, depth, time, node):
     board = node.board()
     info = engine.analyse(board, chess.engine.Limit(time=time, depth=depth))
     return str(info.score)
+
+
+def get_zobrist_hash(node):
+    return polyglot.zobrist_hash(node.board())
 
 
 def get_number_of_attackers(board, squares):

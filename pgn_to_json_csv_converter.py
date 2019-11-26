@@ -20,6 +20,7 @@ parser.add_argument('-dj', '--dump-json', action='store_true', default=False)
 parser.add_argument('-dc', '--dump-csv', action='store_true', default=False)
 parser.add_argument('-o', '--output-dir', type=arg_checker.dir_path, default='./output/')
 parser.add_argument('--moves', action='store_true', default=True)
+parser.add_argument('--zobrist-hash', action='store_true', default=False)
 parser.add_argument('--evals', action='store_true', default=False)
 parser.add_argument('--engine-evals', action='store_true', default=False)
 parser.add_argument('--engine-path', default='./engine/stockfish_10_x64.exe')
@@ -39,6 +40,7 @@ print('Dumping to CSV?:', args.dump_csv)
 print('Dumping to JSON and CSV where?:', args.output_dir)
 print('------------------------------')
 print('Getting moves?:', args.moves)
+print('Getting Zobrist hash?:', args.zobrist_hash)
 print('Getting evals?:', args.evals)
 print('Getting engine evals?:', args.engine_evals)
 print('Getting comments?:', args.comments)
@@ -79,6 +81,9 @@ for file_name in args.files_list:
             if args.moves:
                 data[features.MOVES] = []
 
+            if args.zobrist_hash:
+                data[features.ZOBRIST_HASH] = []
+
             # Eval not available in many-a-games (almost 85%)!
             # Add only if really required.
             # Will save comp time as regex matching no longer required!
@@ -109,6 +114,10 @@ for file_name in args.files_list:
                 # Moves
                 if args.moves:
                     data[features.MOVES].append(features.get_move(node))
+
+                # Zobrist Hash
+                if args.zobrist_hash:
+                    data[features.ZOBRIST_HASH].append(features.get_zobrist_hash(node))
 
                 # Evals
                 if args.evals:
