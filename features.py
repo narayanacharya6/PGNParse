@@ -12,6 +12,7 @@ BLACK_CENTER = "BlackCenter"
 WHITE_DIAGONAL = "WhiteDiag"
 BLACK_DIAGONAL = "BlackDiag"
 ZOBRIST_HASH = "ZobristHash"
+BOARD_2D = "Board2D"
 
 
 def get_move(node):
@@ -61,3 +62,23 @@ def get_number_of_attackers(board, squares):
         black += len(board.attackers(chess.BLACK, square))
 
     return white, black
+
+
+def get_board_2d(node):
+    board = node.board()
+    result = []
+    builder = []
+
+    for square in chess.SQUARES_180:
+        piece = board.piece_at(square)
+
+        if piece:
+            builder.append(piece.piece_type if piece.color else -piece.piece_type)
+        else:
+            builder.append(0)
+
+        if chess.BB_SQUARES[square] & chess.BB_FILE_H:
+            result.append(builder.copy())
+            builder.clear()
+
+    return result
