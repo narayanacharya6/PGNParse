@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 import argparse
 
@@ -114,7 +113,6 @@ for file_name in args.files_list:
 
             while node.variations:
                 next_node = node.variation(0)
-                nags = next_node.nags
 
                 # Moves
                 if args.moves:
@@ -124,6 +122,7 @@ for file_name in args.files_list:
                 if args.zobrist_hash:
                     data[features.ZOBRIST_HASH].append(features.get_zobrist_hash(node))
 
+                # Board 2D
                 if args.board_2d:
                     data[features.BOARD_2D].append(features.get_board_2d(node))
 
@@ -183,6 +182,8 @@ for file_name in args.files_list:
         print('Something went wrong while shutting down engine!')
         print(inst)
 
+print()
+print('------------------------------')
 print('Failed to process games: {}'.format(failed_games))
 
 print()

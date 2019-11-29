@@ -46,7 +46,8 @@ def get_diagonal_control(node):
 
 def get_engine_eval(engine, depth, time, node):
     board = node.board()
-    info = engine.analyse(board, chess.engine.Limit(time=time, depth=depth))
+    info = engine.analyse(board, chess.engine.Limit(depth=depth))
+    # info = engine.analyse(board, chess.engine.Limit(time=time, depth=depth))
     return str(info.score)
 
 
