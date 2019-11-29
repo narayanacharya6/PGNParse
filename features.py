@@ -11,6 +11,8 @@ WHITE_CENTER = "WhiteCenter"
 BLACK_CENTER = "BlackCenter"
 WHITE_DIAGONAL = "WhiteDiag"
 BLACK_DIAGONAL = "BlackDiag"
+WHITE_PINS = "WhitePins"
+BLACK_PINS = "BlackPins"
 ZOBRIST_HASH = "ZobristHash"
 BOARD_2D = "Board2D"
 
@@ -63,6 +65,28 @@ def get_number_of_attackers(board, squares):
         black += len(board.attackers(chess.BLACK, square))
 
     return white, black
+
+
+def get_number_of_pins(node):
+    board = node.board()
+    return get_number_of_pins_for_color(board, chess.WHITE), get_number_of_pins_for_color(board, chess.BLACK)
+
+
+def get_number_of_pins_for_color(board, color):
+    squares = get_significant_pieces_squares(board, color)
+    count = 0
+    for square in squares:
+        if board.is_pinned(color, square):
+            count += 1
+    return count
+
+
+def get_significant_pieces_squares(board, color):
+    knight_squares = board.pieces(chess.KNIGHT, color)
+    bishop_squares = board.pieces(chess.BISHOP, color)
+    rook_squares = board.pieces(chess.ROOK, color)
+    queen_squares = board.pieces(chess.QUEEN, color)
+    return knight_squares.union(bishop_squares).union(rook_squares).union(queen_squares)
 
 
 def get_board_2d(node):

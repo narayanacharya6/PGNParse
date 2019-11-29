@@ -29,6 +29,7 @@ parser.add_argument('--engine-eval-time', default=0.1)
 parser.add_argument('--comments', action='store_true', default=True)
 parser.add_argument('--center-control', action='store_true', default=False)
 parser.add_argument('--diagonal-control', action='store_true', default=False)
+parser.add_argument('--pins', action='store_true', default=False)
 args = parser.parse_args()
 
 print('------------------------------')
@@ -47,6 +48,7 @@ print('Getting engine evals?:', args.engine_evals)
 print('Getting comments?:', args.comments)
 print('Getting center control?:', args.center_control)
 print('Getting diagonal control?:', args.diagonal_control)
+print('Getting pins?:', args.pins)
 print()
 
 games = []
@@ -111,6 +113,10 @@ for file_name in args.files_list:
                 data[features.WHITE_DIAGONAL] = []
                 data[features.BLACK_DIAGONAL] = []
 
+            if args.pins:
+                data[features.WHITE_PINS] = []
+                data[features.BLACK_PINS] = []
+
             while node.variations:
                 next_node = node.variation(0)
 
@@ -150,6 +156,12 @@ for file_name in args.files_list:
                     white_diagonal, black_diagonal = features.get_diagonal_control(node)
                     data[features.WHITE_DIAGONAL].append(white_diagonal)
                     data[features.BLACK_DIAGONAL].append(black_diagonal)
+
+                # Pinned pieces
+                if args.pins:
+                    white_pins, black_pins = features.get_number_of_pins(node)
+                    data[features.WHITE_PINS].append(white_pins)
+                    data[features.BLACK_PINS].append(black_pins)
 
                 node = next_node
 
