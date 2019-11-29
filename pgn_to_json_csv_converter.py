@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--files-list', nargs='+', default=[])
 parser.add_argument('-n', '--number-of-games', default=0)
 parser.add_argument('-b', '--batch-of-games', default=0)
+parser.add_argument('-s', '--skip-games', default=0)
 parser.add_argument('-dj', '--dump-json', action='store_true', default=False)
 parser.add_argument('-dc', '--dump-csv', action='store_true', default=False)
 parser.add_argument('-o', '--output-dir', type=arg_checker.dir_path, default='./output/')
@@ -34,6 +35,7 @@ args = parser.parse_args()
 
 print('------------------------------')
 print('Gathering from files?:', args.files_list)
+print('Skip games per file?:', args.skip_games)
 print('Number of games to parse per file?:', args.number_of_games)
 print('Print every how many number of games?:', args.batch_of_games)
 print('Dumping to JSON?:', args.dump_json)
@@ -72,6 +74,13 @@ for file_name in args.files_list:
     stockfish_engine = chess.engine.SimpleEngine.popen_uci(args.engine_path)
     engine_eval_depth = int(args.engine_eval_depth)
     engine_eval_time = float(args.engine_eval_time)
+
+    # Skipping games
+    games_to_skip = int(args.skip_games)
+    while games_to_skip > 0:
+        chess.pgn.read_game(pgn)
+        games_to_skip -= 1
+
     node = chess.pgn.read_game(pgn)
     while node is not None and len(games_from_file) < games_to_get_per_file:
         try:
