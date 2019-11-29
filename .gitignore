@@ -1,4 +1,4 @@
 .idea/
-*.pgn
+input/lichess_db_standard_rated_2013-02.pgn
 output/
 __pycache__/
