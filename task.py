@@ -8,9 +8,9 @@ import features
 import dumper
 
 
-def run_task(pgn=None, args=None, timestamp=None):
-    if not pgn or not args or not timestamp:
-        "No pgn or args or timestamp passed! How do you expect me to work?"
+def run_task(pgn=None, args=None, batch=None):
+    if not pgn or not args or not batch:
+        "No pgn or args or batch passed! How do you expect me to work?"
         return
 
     games = []
@@ -141,7 +141,7 @@ def run_task(pgn=None, args=None, timestamp=None):
             node = chess.pgn.read_game(pgn)
             failed_games += 1
 
-    print('{} games retrieved from file {}'.format(len(games_from_file), pgn.name))
+    print('{} games retrieved from file {}'.format(len(games_from_file), os.path.split(pgn.name)[1]))
     games.extend(games_from_file)
 
     try:
@@ -164,8 +164,8 @@ def run_task(pgn=None, args=None, timestamp=None):
     print('------------------------------')
     if args.dump_json or args.dump_csv:
         print("All files read! Dumping to JSON and/or CSV!")
-        output_dir = os.path.join(args.output_dir, timestamp)
-        file_name = '{}'.format(pgn.name)
+        output_dir = os.path.join(args.output_dir, batch)
+        file_name = '{}_{}'.format(os.path.split(pgn.name)[1], int(args.skip_games))
 
         if args.dump_json:
             dumper.dump_json(output_dir, file_name, games)

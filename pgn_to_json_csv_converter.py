@@ -15,6 +15,7 @@ if __name__ == "__main__":
     parser.add_argument('-dj', '--dump-json', action='store_true', default=False)
     parser.add_argument('-dc', '--dump-csv', action='store_true', default=False)
     parser.add_argument('-o', '--output-dir', type=arg_checker.dir_path, default='./output/')
+    parser.add_argument('-u', '--unique-batch-identifier')
     parser.add_argument('--moves', action='store_true', default=True)
     parser.add_argument('--zobrist-hash', action='store_true', default=False)
     parser.add_argument('--board-2d', action='store_true', default=False)
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     print('Print every how many number of games?:', args.batch_of_games)
     print('Dumping to JSON?:', args.dump_json)
     print('Dumping to CSV?:', args.dump_csv)
+    print('Unique batch identifier?:', args.unique_batch_identifier)
     print('Dumping to JSON and CSV where?:', args.output_dir)
     print('------------------------------')
     print('Getting moves?:', args.moves)
@@ -49,13 +51,7 @@ if __name__ == "__main__":
     print('Getting pins?:', args.pins)
     print()
 
-    games = []
-    games_to_get_per_file = int(args.number_of_games)
-    batch_size = int(args.batch_of_games)
-    start_time = time.time()
-    failed_games = 0
-
-    timestamp = str(round(time.time() * 1000))
+    batch = str(args.unique_batch_identifier)
     tasks = []
     for file_name in args.files_list:
         pgn = None
@@ -64,7 +60,7 @@ if __name__ == "__main__":
         except Exception as e:
             print("File not found: {}!".format(file_name))
 
-        t = threading.Thread(target=task.run_task, args=[pgn, args, timestamp])
+        t = threading.Thread(target=task.run_task, args=[pgn, args, batch])
         tasks.append(t)
 
     for t in tasks:
