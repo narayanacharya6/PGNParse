@@ -10,6 +10,9 @@ module load mvapich2/gcc7.1/64/2.2rc1
 source activate pgn-parse
 pip install --user -r requirements.txt
 
+### Change permission on the stockfish engine!
+chmod 700 ./engine/stockfish_10_x64
+
 ### Command for running mpi parser
 ### Check arguments in mpi_parser before running this! I know this should be better but we are running out of time!!!
 mpirun -n 2 python mpi_parser.py 2> error.out 1> log.out
