@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
 
-print("This is node {}".format_map(rank))
+print("This is node {}".format(rank))
 
 if rank == 0:
     print("We have {} nodes in our cluster.".format(size))
