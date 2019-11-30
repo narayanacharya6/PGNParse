@@ -1,3 +1,2 @@
-certifi==2019.9.11
 python-chess==0.28.3
-wincertstore==0.2
+mpi4py==3.0.3
