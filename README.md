@@ -3,7 +3,7 @@
 This project was originally built for extracting important features from a game of chess, these features can then be used
 for regression/classification as part of predictive algorithms.
 
-As part of PGNParse we look to extract these features after each step in a game of chess read from a PGN file:
+As part of PGNParse we look to extract features after each step in a game of chess read from a PGN file:
 
 "Evals": Evaluations after each move available in the PGN.
 
@@ -25,9 +25,13 @@ As part of PGNParse we look to extract these features after each step in a game 
 
 "Board2D": Representation of the 2D Board.
 
-"Moves": 
+The features are then dumped into JSON/CSV files which you can then use for your predictive tasks.
 
-"Comments": 
+Sample CSV record looks like this:
+```
+Event,Site,Date,Round,White,Black,Result,BlackElo,WhiteElo,Moves,Comments,WhiteCenter,BlackCenter,WhiteDiag,BlackDiag,WhitePins,BlackPins
+1,kaggle.com,??,??,??,??,1/2-1/2,2411,2354,"['Nf3', 'Nf6', 'c4', 'c5', 'b3', 'g6', 'Bb2', 'Bg7', 'e3', 'O-O', 'Be2', 'b6', 'O-O', 'Bb7', 'Nc3', 'Nc6', 'Qc2', 'Rc8', 'Rac1', 'd5', 'Nxd5', 'Nxd5', 'Bxg7', 'Nf4', 'exf4', 'Kxg7', 'Qc3+', 'Kg8', 'Rcd1', 'Qd6', 'd4', 'cxd4', 'Nxd4', 'Qxf4', 'Bf3', 'Qf6', 'Nb5', 'Qxc3']","[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]","[0, 2, 2, 3, 3, 3, 3, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 5, 6, 6, 6, 6, 7, 6, 4, 3, 5, 5, 8]","[0, 0, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 7, 6, 6, 4, 6, 5, 5, 5, 5, 5, 6, 6, 5, 5, 5, 5, 4, 4]","[8, 9, 9, 10, 10, 9, 9, 13, 13, 14, 14, 13, 13, 15, 15, 14, 14, 17, 17, 17, 17, 20, 19, 20, 20, 20, 13, 18, 19, 18, 18, 15, 14, 14, 13, 16, 16, 19]","[8, 8, 9, 9, 10, 10, 9, 9, 10, 10, 12, 12, 11, 11, 15, 15, 14, 14, 15, 15, 16, 15, 19, 13, 14, 12, 13, 13, 12, 12, 15, 15, 15, 14, 14, 14, 15, 16]","[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]","[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
+```
 
 #### EXTRAS
 
